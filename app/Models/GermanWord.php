@@ -6,12 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Chirp extends Model
+class GermanWord extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'message',
+        'word',
+        'translation',
     ];
 
     public function user(): BelongsTo

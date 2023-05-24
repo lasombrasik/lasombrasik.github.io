@@ -6,11 +6,18 @@
         <div class="flex-1">
             <div class="flex justify-between items-center">
                 <div>
-                    <span class="text-gray-800">{{ chirp.user.name }}</span>
-                    <small class="ml-2 text-sm text-gray-600">{{ dayjs(chirp.created_at).fromNow() }}</small>
-                    <small v-if="chirp.created_at !== chirp.updated_at" class="text-sm text-gray-600"> &middot; edited</small>
+                    <small class="ml-2 text-sm text-gray-600">{{ dayjs(word.created_at).fromNow() }}</small>
+                    <small v-if="word.created_at !== word.updated_at" class="text-sm text-gray-400"> &middot; edited</small><br>
+                    <span class="text-black-400"> Word: </span>
+                    <span class="text-green-600">{{ word.word }}</span><br>
+                    <span class="text-black-400"> Translition: </span>
+                    <span class="text-green-600"> {{ word.translation }}</span>
+                    <br>
+                    <span class="text-black-400">
+                        has been added!
+                    </span>
                 </div>
-                <Dropdown v-if="chirp.user.id === $page.props.auth.user.id">
+                <Dropdown>
                     <template #trigger>
                         <button>
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
@@ -19,31 +26,33 @@
                         </button>
                     </template>
                     <template #content>
+
                         <button class="block w-full px-4 py-2 text-left text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 transition duration-150 ease-in-out" @click="editing = true">
                             Edit
                         </button>
-                        <DropdownLink as="button" :href="route('chirps.destroy', chirp.id)" method="delete">
+                        <DropdownLink as="button" :href="route('words.destroy', word.id)" method="delete">
                             Delete
                         </DropdownLink>
                     </template>
                 </Dropdown>
             </div>
-            <form v-if="editing" @submit.prevent="form.put(route('chirps.update', chirp.id), { onSuccess: () => editing = false })">
-                <textarea v-model="form.message" class="mt-4 w-full text-gray-900 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"></textarea>
-                <InputError :message="form.errors.message" class="mt-2" />
+            <form v-if="editing" @submit.prevent="form.put(route('words.update', word.id), { onSuccess: () => editing = false })">
+                <input type="text" v-model="form.word" class="mt-4 w-full text-gray-900 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"/>
+                <input type="text" v-model="form.translation" class="mt-4 w-full text-gray-900 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"/>
+                <span v-text="form.errors"></span>
+                <InputError :message="form.errors.word" class="mt-2" />
                 <div class="space-x-2">
                     <PrimaryButton class="mt-4">Save</PrimaryButton>
                     <button class="mt-4" @click="editing = false; form.reset(); form.clearErrors()">Cancel</button>
                 </div>
             </form>
-            <p v-else class="mt-4 text-lg text-gray-900">{{ chirp.message }}</p>
         </div>
     </div>
 </template>
 
 <script>
 export default {
-    name: "Chirp"
+    name: "AddWord"
 }
 </script>
 
@@ -59,10 +68,11 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 
 dayjs.extend(relativeTime);
 
-const props = defineProps(['chirp']);
+const props = defineProps(['word', 'translation']);
 
 const form = useForm({
-    message: props.chirp.message,
+    word: props.word.word,
+    translation: props.word.translation,
 });
 
 const editing = ref(false);

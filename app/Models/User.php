@@ -46,8 +46,8 @@ class User extends Authenticatable
     /**
      * @return HasMany
      */
-    public function chirps(): HasMany
+    public function words(): HasMany
     {
-        return $this->hasMany(Chirp::class);
+        return $this->hasMany(GermanWord::class);
     }
 }

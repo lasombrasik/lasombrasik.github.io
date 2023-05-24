@@ -3,7 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ChirpController;
+use App\Http\Controllers\WordController;
 use Inertia\Inertia;
 
 /*
@@ -30,9 +30,17 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::resource('chirps', ChirpController::class)
-    ->only(['index', 'store', 'update', 'destroy'])
+Route::resource('words', WordController::class)
+    ->only(['index', 'create', 'store', 'update', 'destroy'])
     ->middleware(['auth', 'verified']);
+
+Route::get('words/added-words', [WordController::class, 'allAddedWords']
+    )->name('words.all')
+    ->middleware(['auth', 'verified']);
+
+Route::get('words/random-words', [WordController::class, 'randomWord']
+)->name('words.random')
+    ->middleware(['auth', 'verified']);;
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

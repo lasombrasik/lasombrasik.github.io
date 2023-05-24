@@ -32,10 +32,16 @@ const showingNavigationDropdown = ref(false);
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                     Dashboard
                                 </NavLink>
+                                <NavLink :href="route('words.index')" :active="route().current('words.index')">
+                                    Add Words
+                                </NavLink>
+                                <NavLink :href="route('words.all')" :active="route().current('words.all')">
+                                    All Words
+                                </NavLink>
+                                <NavLink :href="route('words.random')" :active="route().current('words.random')">
+                                    Game: Remember the word
+                                </NavLink>
                             </div>
-                            <NavLink :href="route('chirps.index')" :active="route().current('chirps.index')">
-                                Chirps
-                            </NavLink>
                         </div>
 
                         <div class="hidden sm:flex sm:items-center sm:ml-6">
@@ -118,8 +124,14 @@ const showingNavigationDropdown = ref(false);
                         <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
                             Dashboard
                         </ResponsiveNavLink>
-                        <ResponsiveNavLink :href="route('chirps.index')" :active="route().current('chirps.index')">
-                            Chirps
+                        <ResponsiveNavLink :href="route('words.create')" :active="route().current('words.create')">
+                            Add Words
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink :href="route('words.all')" :active="route().current('words.all')">
+                            All Words
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink :href="route('words.random')" :active="route().current('words.random')">
+                            Game: Remember the word
                         </ResponsiveNavLink>
                     </div>
 
