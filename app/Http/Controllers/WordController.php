@@ -128,4 +128,14 @@ class WordController extends Controller
                 ->get(),
         ]);
     }
+
+    public function delete($id) :Response
+    {
+        $word = GermanWord::query()->find($id);
+        $this->authorize('delete', $word);
+
+        $word->delete();
+
+        return Inertia::render('Words/Index')->with('message', 'Запись успешно удалена.');
+    }
 }
