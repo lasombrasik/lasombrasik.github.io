@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::defaultStringLength(191);
         Schema::create('password_reset_tokens', function (Blueprint $table) {
-            $table->string('email', 999)->primary();
+            $table->string('email', 128)->primary();
             $table->string('token');
             $table->timestamp('created_at')->nullable();
         });
