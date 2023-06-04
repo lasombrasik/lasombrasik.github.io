@@ -41,6 +41,7 @@
                         class="text-black-600 sm:text-3xl"
                     >
                         <button
+                            v-if="done"
                             id="show-modal"
                             class="px-4 text-left text-sm bg-gray-300 leading-5 text-black-700 hover:bg-blue-400 transition duration-150 ease-in-out mr-1"
                             @click="openModal(item); editing = true"
@@ -68,7 +69,7 @@
                         <button class="mt-4 text-left bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-blue-600" @click="editing = false; form.reset(); form.clearErrors()">Cancel</button>
                         <button class="mt-4 text-right bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-green-600" type="submit" @click="editing = false; form.reset(); form.clearErrors();">Save</button>
                     </div>
-                </form>
+                </form>Action
             </div>
         </div>
     </AuthenticatedLayout>
@@ -95,6 +96,7 @@ export default {
     data() {
         return {
             selectedItemId: false,
+            done: false
         }
     },
     methods: {
