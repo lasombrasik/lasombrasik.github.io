@@ -158,6 +158,13 @@ class WordController extends Controller
     public function delete($id): Response
     {
         $word = GermanWord::query()->find($id);
+
+        if (!$word) {
+            return Inertia::render('Words/Index')->with('error', 'Запись не найдена.');
+        } else {
+            dd($word);
+        }
+
         $this->authorize('delete', $word);
 
         $word->delete();
