@@ -101,7 +101,7 @@ export default {
     },
     methods: {
         async destroy(itemId) {
-            await axios.delete(`/words/delete/${itemId}`)
+            await axios.delete(`/words/${itemId}`)
                 .then(response => {
                     window.location.reload()
                     console.log('The entry was successfully deleted.');

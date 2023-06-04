@@ -119,13 +119,17 @@ class WordController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(GermanWord $word): RedirectResponse
+    public function destroy(Request $request, $id): Response
     {
-        $this->authorize('delete', $word);
+        $word = GermanWord::find($id);
 
-        $word->delete();
+        if (!$word) {
+            Inertia::render('Words/Index')->with('error', 'Запись не найдена.');
+        }
 
-        return redirect(route('words.index'));
+        $word->destroy($id);
+
+        return Inertia::render('Words/Index')->with('message', 'Запись успешно удалена.');
     }
 
     /**
@@ -153,22 +157,5 @@ class WordController extends Controller
                 ->orderBy('word')
                 ->get(),
         ]);
-    }
-
-    public function delete($id): Response
-    {
-        $word = GermanWord::query()->find($id);
-
-        if (!$word) {
-            return Inertia::render('Words/Index')->with('error', 'Запись не найдена.');
-        } else {
-            dd($word);
-        }
-
-        $this->authorize('delete', $word);
-
-        $word->delete();
-
-        return Inertia::render('Words/Index')->with('message', 'Запись успешно удалена.');
     }
 }
