@@ -8,6 +8,7 @@ import AddWord from '@/Components/AddWord.vue';
 defineProps(['words']);
 
 const form = useForm({
+    article: '',
     word: '',
     translation: '',
 });
@@ -19,16 +20,27 @@ const form = useForm({
     <AuthenticatedLayout>
         <div class="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
             <form @submit.prevent="form.post(route('words.store'), { onSuccess: () => form.reset() })">
+                <div class="flex flex-row">
+                    <input
+                        id="article-input"
+                        type="text"
+                        v-model="form.article"
+                        placeholder="The Article"
+                        class="block w-1/4 mr-2 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
+                    /><br>
+                    <input
+                        id="word-input"
+                        type="text"
+                        v-model="form.word"
+                        placeholder="The Word"
+                        class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
+                    />
+                </div><br>
                 <input
-                    type="text"
-                    v-model="form.word"
-                    placeholder="Enter a word"
-                    class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
-                /><br>
-                <input
+                    id="translation-input"
                     type="text"
                     v-model="form.translation"
-                    placeholder="Enter a translation"
+                    placeholder="The Translation"
                     class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
                 />
                 <InputError :message="form.errors.word" class="mt-2" />

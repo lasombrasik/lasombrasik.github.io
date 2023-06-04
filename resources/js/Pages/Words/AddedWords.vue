@@ -14,7 +14,7 @@
                         :class="index % 2 === 0 ? 'bg-gray-200' : false"
                         class="text-black-600 sm:text-3xl text-center"
                     >
-                        {{ item.word }}
+                        {{ item.article ? item.article + ' ' + item.word : item.word }}
                     </li>
                 </ul>
             </div>

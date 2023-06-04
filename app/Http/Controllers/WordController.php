@@ -6,6 +6,7 @@ use App\Models\GermanWord;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -39,10 +40,26 @@ class WordController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'word' => 'required|string|max:255|unique:german_words',
-            'translation' => 'required|string|max:255',
-        ]);
+        $validated = $request->validate(
+            [
+                'article' => 'nullable|string|max:10',
+                'word' => [
+                    'required',
+                    'string',
+                    'max:255',
+                    Rule::unique('german_words')->where(function ($query) use ($request) {
+                        return $query->where('user_id', $request->user()->id);
+                    })
+                ],
+                'translation' => 'required|string|max:255',
+            ],
+            [
+                'article.max' => 'The :attribute field is required.',
+                'word.required' => 'The :attribute field is required.',
+                'word.string' => 'The :attribute field is string.',
+                'word.max' => 'The :attribute field max 255.',
+                'word.unique' => 'This word has already been added'
+            ]);
 
         $request->user()->words()->create($validated);
 
@@ -74,10 +91,19 @@ class WordController extends Controller
 
         $validated = $request->validate(
             [
-            'word' => 'required|string|max:255|unique:german_words',
-            'translation' => 'required|string|max:255',
+                'article' => 'nullable|string|max:10',
+                'word' => [
+                    'required',
+                    'string',
+                    'max:255',
+                    Rule::unique('german_words')->where(function ($query) use ($request) {
+                        return $query->where('user_id', $request->user()->id);
+                    })
+                ],
+                'translation' => 'required|string|max:255',
             ],
             [
+                'article.max' => 'The :attribute field is required.',
                 'word.required' => 'The :attribute field is required.',
                 'word.string' => 'The :attribute field is string.',
                 'word.max' => 'The :attribute field max 255.',
@@ -117,7 +143,7 @@ class WordController extends Controller
         ]);
     }
 
-    public function randomWord() : Response
+    public function randomWord(): Response
     {
         $userId = Auth::user()->id;
 
@@ -129,7 +155,7 @@ class WordController extends Controller
         ]);
     }
 
-    public function delete($id) :Response
+    public function delete($id): Response
     {
         $word = GermanWord::query()->find($id);
         $this->authorize('delete', $word);

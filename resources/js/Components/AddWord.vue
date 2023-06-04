@@ -8,6 +8,10 @@
                 <div>
                     <small class="ml-2 text-sm text-gray-600">{{ dayjs(word.created_at).fromNow() }}</small>
                     <small v-if="word.created_at !== word.updated_at" class="text-sm text-gray-400"> &middot; edited</small><br>
+                    <span v-if="word.article">
+                        <span class="text-black-400"> Article: </span>
+                        <span class="text-green-600">{{ word.article }}</span><br>
+                    </span>
                     <span class="text-black-400"> Word: </span>
                     <span class="text-green-600">{{ word.word }}</span><br>
                     <span class="text-black-400"> Translition: </span>
@@ -30,7 +34,6 @@
                         <button class="block w-full px-4 py-2 text-left text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 transition duration-150 ease-in-out" @click="editing = true">
                             Edit
                         </button>
-                        <span v-text="route('words.destroy', word.id)"></span>
                         <DropdownLink as="button" :href="route('words.destroy', word.id)" method="delete">
                             Delete
                         </DropdownLink>
@@ -38,9 +41,12 @@
                 </Dropdown>
             </div>
             <form v-if="editing" @submit.prevent="form.put(route('words.update', word.id), { onSuccess: () => editing = false })">
-                <input type="text" v-model="form.word" class="mt-4 w-full text-gray-900 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"/>
-                <input type="text" v-model="form.translation" class="mt-4 w-full text-gray-900 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"/>
-                <span v-text="form.errors"></span>
+                <input type="text" v-model="form.article" placeholder="The Article" class="mt-4 w-full text-gray-900 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"/>
+                <input type="text" v-model="form.word" placeholder="The Word" class="mt-4 w-full text-gray-900 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"/>
+                <input type="text" v-model="form.translation" placeholder="The Translation" class="mt-4 w-full text-gray-900 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"/>
+                <span v-if="form.errors.length">
+                    {{ form.errors }}
+                </span>
                 <InputError :message="form.errors.word" class="mt-2" />
                 <div class="space-x-2">
                     <PrimaryButton class="mt-4">Save</PrimaryButton>
@@ -69,9 +75,10 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 
 dayjs.extend(relativeTime);
 
-const props = defineProps(['word', 'translation']);
+const props = defineProps(['article', 'word', 'translation']);
 
 const form = useForm({
+    article: props.word.article,
     word: props.word.word,
     translation: props.word.translation,
 });

@@ -51,13 +51,13 @@ export default {
         },
         startRandomWord() {
             const randomIndex = Math.floor(Math.random() * this.words.length);
-            this.randomWord = this.words[randomIndex].word;
+            this.randomWord = this.words[randomIndex].article ? this.words[randomIndex].article + ' ' + this.words[randomIndex].word : this.words[randomIndex].word;
             this.translation = this.words[randomIndex].translation;
             this.displayDots();
         },
         generateRandomWord() {
             const randomIndex = Math.floor(Math.random() * this.words.length);
-            this.randomWord = this.words[randomIndex].word;
+            this.randomWord = this.words[randomIndex].article ? this.words[randomIndex].article + ' ' + this.words[randomIndex].word : this.words[randomIndex].word;
             this.translation = this.words[randomIndex].translation;
             this.displayDots();
             this.showTranslate = false;

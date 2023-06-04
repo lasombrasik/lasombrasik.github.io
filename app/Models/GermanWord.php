@@ -11,6 +11,7 @@ class GermanWord extends Model
     use HasFactory;
 
     protected $fillable = [
+        'article',
         'word',
         'translation',
     ];

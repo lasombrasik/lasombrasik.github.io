@@ -124,7 +124,7 @@ const showingNavigationDropdown = ref(false);
                         <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
                             Dashboard
                         </ResponsiveNavLink>
-                        <ResponsiveNavLink :href="route('words.create')" :active="route().current('words.create')">
+                        <ResponsiveNavLink :href="route('words.index')" :active="route().current('words.create')">
                             Add Words
                         </ResponsiveNavLink>
                         <ResponsiveNavLink :href="route('words.all')" :active="route().current('words.all')">
