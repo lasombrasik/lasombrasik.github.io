@@ -26,7 +26,7 @@ const form = useForm({
                         type="text"
                         v-model="form.article"
                         @input="checkInputLength()"
-                        placeholder="The Article"
+                        placeholder="Article"
                         maxlength="3"
                         class="block w-1/4 mr-2 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm text-center"
                     /><br>
@@ -34,7 +34,7 @@ const form = useForm({
                         id="word-input"
                         type="text"
                         v-model="form.word"
-                        placeholder="The Word"
+                        placeholder="Word"
                         class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
                     />
                 </div><br>
@@ -42,7 +42,7 @@ const form = useForm({
                     id="translation-input"
                     type="text"
                     v-model="form.translation"
-                    placeholder="The Translation"
+                    placeholder="Translation"
                     class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
                 />
                 <InputError :message="form.errors.word" class="mt-2" />

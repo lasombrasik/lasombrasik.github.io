@@ -41,9 +41,9 @@
                 </Dropdown>
             </div>
             <form v-if="editing" @submit.prevent="form.put(route('words.update', word.id), { onSuccess: () => editing = false })">
-                <input type="text" v-model="form.article" placeholder="The Article" class="mt-4 w-full text-gray-900 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"/>
-                <input type="text" v-model="form.word" placeholder="The Word" class="mt-4 w-full text-gray-900 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"/>
-                <input type="text" v-model="form.translation" placeholder="The Translation" class="mt-4 w-full text-gray-900 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"/>
+                <input type="text" v-model="form.article" placeholder="Article" class="mt-4 w-full text-gray-900 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"/>
+                <input type="text" v-model="form.word" placeholder="Word" class="mt-4 w-full text-gray-900 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"/>
+                <input type="text" v-model="form.translation" placeholder="Translation" class="mt-4 w-full text-gray-900 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"/>
                 <span v-if="form.errors.length">
                     {{ form.errors }}
                 </span>
