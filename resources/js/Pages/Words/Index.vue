@@ -2,7 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import { useForm, Head } from '@inertiajs/vue3';
+import {Head, useForm} from '@inertiajs/vue3';
 import AddWord from '@/Components/AddWord.vue';
 
 defineProps(['words']);
@@ -25,8 +25,10 @@ const form = useForm({
                         id="article-input"
                         type="text"
                         v-model="form.article"
+                        @input="checkInputLength()"
                         placeholder="The Article"
-                        class="block w-1/4 mr-2 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
+                        maxlength="3"
+                        class="block w-1/4 mr-2 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm text-center"
                     /><br>
                     <input
                         id="word-input"
@@ -60,3 +62,27 @@ const form = useForm({
         </div>
     </AuthenticatedLayout>
 </template>
+
+<script>
+export default {
+    name: "Index",
+    methods: {
+         checkInputLength() {
+            let input = document.getElementById("article-input");
+            let value = input.value;
+
+            if (value.length > 0) {
+                input.value = value.charAt(0).toUpperCase() + value.slice(1);
+            }
+
+            if (input.value.length === 3) {
+                let nextInput = document.getElementById("word-input");
+
+                if (nextInput) {
+                    nextInput.focus();
+                }
+            }
+        }
+    }
+}
+</script>
