@@ -18,7 +18,7 @@
                     <div class="text-3xl font-bold p-12 inline-flex">
                         {{ randomWord }}
                         <button
-                            class="transform -translate-y-1/2 text-blue-400 hover:text-blue-600 text-white font-bold rounded"
+                            class="transform -translate-y-1/2 text-blue-400 hover:text-blue-600 font-bold rounded"
                             @click="speak(randomWord)"
                         >
                             <i class="fa fa-play-circle text-xs"></i>
