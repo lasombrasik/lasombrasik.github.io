@@ -115,7 +115,7 @@
         </div>
         <div
             v-if="filteredWords.length !== 0"
-            class="flex justify-between mt-8 h-1/4 mx-auto sm:w-1/3 relative"
+            class="flex justify-between mt-32 h-1/4 mx-auto sm:w-1/3 relative"
         >
             <div class="flex w-1/2 pl-2">
                 <button
