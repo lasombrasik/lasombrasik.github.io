@@ -96,10 +96,7 @@ class WordController extends Controller
                 'word' => [
                     'required',
                     'string',
-                    'max:255',
-                    Rule::unique('german_words')->where(function ($query) use ($request) {
-                        return $query->where('user_id', $request->user()->id);
-                    })
+                    'max:255'
                 ],
                 'translation' => 'required|string|max:255',
             ],
@@ -108,7 +105,6 @@ class WordController extends Controller
                 'word.required' => 'The :attribute field is required.',
                 'word.string' => 'The :attribute field is string.',
                 'word.max' => 'The :attribute field max 255.',
-                'word.unique' => 'This word has already been added'
             ]
         );
 
