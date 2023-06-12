@@ -104,7 +104,7 @@
         </div>
         <div
             v-if="filteredWords.length !== 0"
-            class="flex justify-center mt-4"
+            class="flex justify-center mt-12"
         >
             <button
                 class="w-120 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded text-center"
