@@ -14,6 +14,11 @@ class GermanWord extends Model
         'article',
         'word',
         'translation',
+        'memorization_level'
+    ];
+
+    protected $casts = [
+        'memorization_level' => 'array',
     ];
 
     public function user(): BelongsTo

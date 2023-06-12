@@ -42,6 +42,10 @@ Route::get('words/random-words', [WordController::class, 'randomWord']
 )->name('words.random')
     ->middleware(['auth', 'verified']);;
 
+Route::get('words/not-display-word/{wordId}', [WordController::class, 'notDisplayWord']
+)->name('words.not_display_word')
+    ->middleware(['auth', 'verified']);
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\GermanWord;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -124,12 +125,12 @@ class WordController extends Controller
         $word = GermanWord::find($id);
 
         if (!$word) {
-            Inertia::render('Words/Index')->with('error', 'Запись не найдена.');
+            Inertia::render('Words/Index')->with('error', 'Entry not found.');
         }
 
         $word->destroy($id);
 
-        return Inertia::render('Words/Index')->with('message', 'Запись успешно удалена.');
+        return Inertia::render('Words/Index')->with('message', 'Has been delete!');
     }
 
     /**
@@ -150,12 +151,67 @@ class WordController extends Controller
     public function randomWord(): Response
     {
         $userId = Auth::user()->id;
+        $oneMonthAgo = Carbon::now()->subMonths(1);
 
         return Inertia::render('Words/RandomWord', [
             'words' => GermanWord::with('user:id,name')
                 ->where('user_id', $userId)
                 ->orderBy('word')
                 ->get(),
+            'visibleWords' => GermanWord::with('user:id,name')
+                ->where('user_id', $userId)
+                ->where(function ($query) {
+                    $query->whereJsonContains('memorization_level->learned->value', 0)
+                        ->orWhereNull('memorization_level');
+                })
+                ->where(function ($query) use ($oneMonthAgo) {
+                    $query->orWhere('memorization_level->remembered->value', '!=', 1)
+                        ->orWhere(function ($query) use ($oneMonthAgo) {
+                            $query->where('memorization_level->remembered->update_date', '<=', $oneMonthAgo);
+                        })
+                        ->orWhereNull('memorization_level');
+                })
+                ->latest()
+                ->get(),
         ]);
+    }
+
+    public function notDisplayWord(Request $request, $wordId): Response
+    {
+        $word = GermanWord::query()->find($wordId);
+        $memorizationLevel = $request->get('memorizationLevel');
+
+
+        if (!$word || !$memorizationLevel) {
+           return Inertia::render('Words/Index')->with('error', 'Entry not found.');
+        }
+
+        if ($memorizationLevel == 'learned') {
+            $word->memorization_level = [
+                'learned' => [
+                    'value' => 1
+                ],
+                'remembered' => [
+                    'value' => 0,
+                    'update_date' => null,
+                ],
+            ];
+        }
+
+        if ($memorizationLevel == 'remembered') {
+            $word->memorization_level = [
+                'learned' => [
+                    'value' => 0
+                ],
+                'remembered' => [
+                    'value' => 1,
+                    'update_date' => Carbon::now()->format('Y-m-d'),
+                ],
+            ];
+        }
+
+        $word->save();
+
+        return Inertia::render('Words/RandomWord')->with('error', 'Has been added!');
     }
 }
