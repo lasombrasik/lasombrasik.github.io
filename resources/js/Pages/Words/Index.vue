@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import {Head, useForm} from '@inertiajs/vue3';
-import AddWord from '@/Components/AddWord.vue';
+import AddWord from '@/Pages/Words/AddWord.vue';
 
 defineProps(['words']);
 
