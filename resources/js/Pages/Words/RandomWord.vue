@@ -150,9 +150,6 @@
 </template>
 
 <script>
-import { Select, initTE } from "tw-elements";
-initTE({ Select });
-
 export default {
     name: "RandomWord",
     data() {
