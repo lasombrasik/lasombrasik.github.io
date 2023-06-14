@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Models\GermanWord;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WordController;
 use App\Http\Controllers\NumberController;
@@ -19,7 +21,11 @@ use Inertia\Inertia;
 */
 
 Route::get('/', function () {
-    return Inertia::render('Index', [
+    return Inertia::render('Words/Index', [
+        'words' => GermanWord::with('user:id,name')
+            ->where('user_id', Auth::user()->id)
+            ->latest()
+            ->get(),
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
