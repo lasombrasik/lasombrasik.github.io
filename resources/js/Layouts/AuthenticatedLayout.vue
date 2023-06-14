@@ -41,6 +41,9 @@ const showingNavigationDropdown = ref(false);
                                 <NavLink :href="route('words.random')" :active="route().current('words.random')">
                                     Game: Remember the word
                                 </NavLink>
+                                <NavLink :href="route('words.filling')" :active="route().current('words.filling')">
+                                    Game: Word Filling
+                                </NavLink>
                             </div>
                         </div>
 
@@ -132,6 +135,9 @@ const showingNavigationDropdown = ref(false);
                         </ResponsiveNavLink>
                         <ResponsiveNavLink :href="route('words.random')" :active="route().current('words.random')">
                             Game: Remember the word
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink :href="route('words.filling')" :active="route().current('words.filling')">
+                            Game: Word Filling
                         </ResponsiveNavLink>
                     </div>
 

@@ -1,5 +1,5 @@
 <template>
-    <Head title="Game: Remember the word" />
+    <Head title="Game: Word Filling" />
 
     <AuthenticatedLayout>
         <div class="flex justify-center h-fit mt-4 mb-4">
@@ -73,7 +73,7 @@
                     v-if="filteredWords.length !== 0"
                     class="text-center"
                 >
-                    <div class="text-3xl font-bold p-12 inline-flex">
+                    <div class="text-3xl font-bold p-4 inline-flex">
                         {{ languageSwitching ? randomWord : translation }}
                         <button
                             class="transform -translate-y-1/2 text-blue-400 hover:text-blue-600 font-bold rounded"
@@ -83,13 +83,96 @@
                             <i class="fa fa-play-circle text-xs"></i>
                         </button>
                     </div>
-                    <div class="text-3xl text-green-600">
-                        <span v-if="languageSwitching">
-                            {{ showTranslate ? translation : translationDots }}
+                    <div class="text-3xl font-bold p-4 flex-col">
+                        <span class="text-3xl text-green-600 mb-4">
+                            <span v-if="!showTranslateFilled && languageSwitching">
+                                {{ translationDots }}
+                            </span>
+                            <span v-else-if="!showTranslateFilled && !languageSwitching">
+                                {{ randomDots }}
+                            </span>
+                            <span v-else-if="showTranslateFilled && languageSwitching">
+                                {{ translation }}
+                            </span>
+                            <span v-else-if="showTranslateFilled && !languageSwitching">
+                                {{ randomWord }}
+                            </span>
                         </span>
-                        <span v-else>
-                            {{ showTranslate ? randomWord : randomDots }}
+                    </div>
+                    <div class="pt-6">
+                        <span
+                            v-if="isEntered && !correctInput"
+                            class="mt-16"
+                        >
+                            {{ 'Your Answer:' }}
+                        </span><br>
+                        <span
+                            v-if="isEntered"
+                            class="text-3xl font-bold"
+                        >
+                            <span
+                                v-html="showTranslateFilled ? translationFilled : translationDots"
+                                :class="{'text-green-500 mx-auto text-3xl text-green-600 mb-4': correctInput && showTranslate, 'text-red-300 mx-auto': !correctInput && showTranslate}"
+                            ></span>
                         </span>
+                        <span
+                            v-if="languageSwitching"
+                            class="flex flex-col mt-4"
+                        >
+                            <input
+                                v-if="!isEntered"
+                                v-model="userWordFilled"
+                                placeholder="Enter..."
+                                class="w-auto mb-4 mx-auto px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500"
+                                type="text"
+                                @keyup.enter="checkFilling(translation)"
+                            />
+                            <button
+                                v-if="!showTranslateFilled"
+                                class="mx-auto px-4 py-2 pb-3 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+                                @click="checkFilling(translation)"
+                            >
+                                {{ 'Check' }}
+                            </button>
+
+                            <span
+                                class="text mt-4"
+                                :class="{'bg-green-300 mx-auto': correctInput && showTranslate, 'bg-red-300 mx-auto': !correctInput && showTranslate}"
+                            >
+                                {{ correctInput && showTranslate ? wordsForCongratulationsAndFailures(arrayWordsForCongratulations) : !correctInput && showTranslate ? wordsForCongratulationsAndFailures(arrayWordsOfFailure) : '' }}
+                            </span>
+                        </span>
+                        <span
+                            v-else
+                            class="flex flex-col mt-4"
+                        >
+                            <input
+                                v-if="!isEntered"
+                                v-model="userWordFilled"
+                                placeholder="Enter..."
+                                class="w-auto mb-4 mx-auto px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500"
+                                type="text"
+                                @keyup.enter="checkFilling(randomWord)"
+                            />
+                            <button
+                                v-if="!showTranslateFilled"
+                                class="mx-auto px-4 py-2 pb-3 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+                                @click="checkFilling(randomWord)"
+                            >
+                                {{ 'Check' }}
+                            </button>
+                        </span>
+                    </div>
+                    <div
+                        v-if="filteredWords.length !== 0 && (showTranslate || showTranslateFilled)"
+                        class="flex justify-center mt-12"
+                    >
+                        <button
+                            class="w-120 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded text-center"
+                            @click="showTranslation"
+                        >
+                            {{ button }}
+                        </button>
                     </div>
                 </div>
                 <div
@@ -101,17 +184,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div
-            v-if="filteredWords.length !== 0"
-            class="flex justify-center mt-12"
-        >
-            <button
-                class="w-120 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded text-center"
-                @click="showTranslation"
-            >
-                {{ button }}
-            </button>
         </div>
         <div
             v-if="filteredWords.length !== 0"
@@ -151,20 +223,50 @@
 
 <script>
 export default {
-    name: "RandomWord",
+    name: "WordFilling",
     data() {
         return {
             showTranslate: false,
             randomWord: '',
             translation: '',
-            button: 'Show Translation',
+            button: 'Next',
             translationDots: '',
             soundOn: true,
             languageSwitching: true,
             isHoveredLearned: false,
             isHoveredRemembered: false,
             currentWord: '',
-            selectedFilter: 'all-time'
+            selectedFilter: 'all-time',
+            userWordFilled: '',
+            correctInput: false,
+            arrayWordsForCongratulations: [
+                'Good job!',
+                'Great work!',
+                'Excellent!',
+                'You did a fantastic job!',
+                'Superb!',
+                'Well done!',
+                'Amazing!',
+                'You did an outstanding job!',
+                'You achieved perfection!',
+                'Great result!'
+            ],
+            arrayWordsOfFailure: [
+                'Don\'t be discouraged!',
+                'Try again!',
+                'Failure is a part of the process.',
+                'It\'s not a success, but it\'s not the end.',
+                'Failure is an opportunity for growth.',
+                'Don\'t be afraid to make mistakes.',
+                'Learn from your mistakes.',
+                'It\'s important not to give up.',
+                'Keep moving forward.',
+                'I\'m confident you\'ll succeed next time!'
+            ],
+            translationFilled: '',
+            showTranslateFilled: '',
+            isEntered: false,
+            randomDots: ''
         }
     },
     mounted() {
@@ -193,7 +295,7 @@ export default {
                         const weekAgo = new Date().setDate(today.getDate() - 7);
 
                         return new Date(word.created_at) >= weekAgo
-                });
+                    });
                 case 'month':
                     return this.visibleWords.filter(word => {
                         const monthAgo = new Date().setDate(today.getDate() - 31);
@@ -207,12 +309,14 @@ export default {
     },
     methods: {
         showTranslation(){
+            this.isEntered = false;
+            this.button = 'Next Word';
+            this.translationFilled = '';
             if(this.showTranslate === false) {
                 this.showTranslate = true;
-                this.button = 'Next Word';
-                this.showTranslate = true;
             } else {
-                this.button = 'Show Translation';
+                this.correctInput = false;
+                this.showTranslateFilled = false;
                 this.generateRandomWord();
             }
         },
@@ -276,6 +380,12 @@ export default {
             this.displayDots();
         },
         toggleLanguage() {
+            this.showTranslate = '';
+            this.translationFilled = '';
+            this.showTranslateFilled = '';
+            this.isEntered = false;
+            this.userWordFilled = '';
+            this.correctInput = false;
             this.createRandomWord();
         },
         async notDisplayWord(memorizationLevel) {
@@ -284,12 +394,51 @@ export default {
                     memorizationLevel: memorizationLevel
                 }
             }).then(response => {
-                    window.location.reload()
-                    console.log('The entry was successfully added.');
-                })
+                window.location.reload()
+                console.log('The entry was successfully added.');
+            })
                 .catch(error => {
                     console.error('Error while adding record', error);
                 });
+        },
+        checkFilling(correctFilling) {
+            this.isEntered = true;
+            if (this.userWordFilled.toLowerCase() === correctFilling.toLowerCase()) {
+                this.correctInput = true;
+                this.showTranslate = true;
+                this.showTranslateFilled = true;
+                this.userWordFilled = '';
+            } else {
+                this.translationFilled = this.compareAndHighlightWords(correctFilling, this.userWordFilled)
+                this.showTranslate = true;
+                this.showTranslateFilled = true;
+                this.userWordFilled = '';
+            }
+        },
+        wordsForCongratulationsAndFailures(type) {
+            const randomIndex = Math.floor(Math.random() * type.length);
+
+            return type[randomIndex];
+        },
+        compareAndHighlightWords(word1, word2) {
+            if (word2.length === 0) {
+                return 'You didn\'t answer';
+            }
+
+            if (word1.length !== word2.length) {
+                return 'Wrong number of letters';
+            }
+
+            let output = '';
+            for (let i = 0; i < word1.length; i++) {
+                if (word1[i] !== word2[i]) {
+                    output += '<span style="color: red;">' + word2[i] + '</span>';
+                } else {
+                    output += '<span style="color: green;">' + word1[i] + '</span>';
+                }
+            }
+
+            return output;
         }
     }
 }
@@ -304,4 +453,5 @@ defineProps(['visibleWords']);
 </script>
 
 <style scoped>
+
 </style>

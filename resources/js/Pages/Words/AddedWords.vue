@@ -1,5 +1,5 @@
 <template>
-    <Head title="Dashboard" />
+    <Head title="Added Words" />
 
     <AuthenticatedLayout>
         <div class=" text-black-600 font-semibold sm:text-lg text-center">

@@ -40,7 +40,11 @@ Route::get('words/added-words', [WordController::class, 'allAddedWords']
 
 Route::get('words/random-words', [WordController::class, 'randomWord']
 )->name('words.random')
-    ->middleware(['auth', 'verified']);;
+    ->middleware(['auth', 'verified']);
+
+Route::get('words/words-filling', [WordController::class, 'wordFilling']
+)->name('words.filling')
+    ->middleware(['auth', 'verified']);
 
 Route::get('words/not-display-word/{wordId}', [WordController::class, 'notDisplayWord']
 )->name('words.not_display_word')

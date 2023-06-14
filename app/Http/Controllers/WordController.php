@@ -146,29 +146,23 @@ class WordController extends Controller
 
     public function randomWord(): Response
     {
-        $userId = Auth::user()->id;
-        $oneMonthAgo = Carbon::now()->subMonths(1);
+        $words = $this->getGermanWords();
+        $visibleWords = $this->getVisibleGermanWords();
 
         return Inertia::render('Words/RandomWord', [
-            'words' => GermanWord::with('user:id,name')
-                ->where('user_id', $userId)
-                ->orderBy('word')
-                ->get(),
-            'visibleWords' => GermanWord::with('user:id,name')
-                ->where('user_id', $userId)
-                ->where(function ($query) {
-                    $query->whereJsonContains('memorization_level->learned->value', 0)
-                        ->orWhereNull('memorization_level');
-                })
-                ->where(function ($query) use ($oneMonthAgo) {
-                    $query->orWhere('memorization_level->remembered->value', '!=', 1)
-                        ->orWhere(function ($query) use ($oneMonthAgo) {
-                            $query->where('memorization_level->remembered->update_date', '<=', $oneMonthAgo);
-                        })
-                        ->orWhereNull('memorization_level');
-                })
-                ->latest()
-                ->get(),
+            'words' => $words,
+            'visibleWords' => $visibleWords,
+        ]);
+    }
+
+    public function wordFilling(): Response
+    {
+        $words = $this->getGermanWords();
+        $visibleWords = $this->getVisibleGermanWords();
+
+        return Inertia::render('Words/WordFilling', [
+            'words' => $words,
+            'visibleWords' => $visibleWords,
         ]);
     }
 
@@ -209,5 +203,36 @@ class WordController extends Controller
         $word->save();
 
         return Inertia::render('Words/RandomWord')->with('error', 'Has been added!');
+    }
+
+    private function getVisibleGermanWords()
+    {
+        $userId = Auth::user()->id;
+        $oneMonthAgo = Carbon::now()->subMonths(1);
+
+        return GermanWord::with('user:id,name')
+            ->where('user_id', $userId)
+            ->where(function ($query) {
+                $query->whereJsonContains('memorization_level->learned->value', 0)
+                    ->orWhereNull('memorization_level');
+            })
+            ->where(function ($query) use ($oneMonthAgo) {
+                $query->orWhere('memorization_level->remembered->value', '!=', 1)
+                    ->orWhere(function ($query) use ($oneMonthAgo) {
+                        $query->where('memorization_level->remembered->update_date', '<=', $oneMonthAgo);
+                    })
+                    ->orWhereNull('memorization_level');
+            })
+            ->latest()
+            ->get();
+    }
+
+    private function getGermanWords()
+    {
+        $userId = Auth::user()->id;
+        return GermanWord::with('user:id,name')
+            ->where('user_id', $userId)
+            ->orderBy('word')
+            ->get();
     }
 }
