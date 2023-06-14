@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WordController;
+use App\Http\Controllers\NumberController;
 use Inertia\Inertia;
 
 /*
@@ -44,6 +45,10 @@ Route::get('words/words-filling', [WordController::class, 'wordFilling']
 
 Route::get('words/not-display-word/{wordId}', [WordController::class, 'notDisplayWord']
 )->name('words.not_display_word')
+    ->middleware(['auth', 'verified']);
+
+Route::get('generate-random-number', [NumberController::class, 'generateRandomNumber']
+)->name('generate.random.number')
     ->middleware(['auth', 'verified']);
 
 Route::middleware('auth')->group(function () {
