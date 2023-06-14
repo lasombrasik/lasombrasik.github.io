@@ -26,10 +26,6 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::resource('words', WordController::class)
     ->only(['index', 'create', 'store', 'update', 'destroy'])
     ->middleware(['auth', 'verified']);
