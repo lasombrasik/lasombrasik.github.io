@@ -9,13 +9,13 @@
             >
                 <input
                     v-model="numberFrom"
-                    class="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    class="border w-28 border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     type="number"
                     placeholder="From"
                 />
                 <input
                     v-model="numberTo"
-                    class="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    class="border w-28 border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     type="number"
                     placeholder="To"
                 />
