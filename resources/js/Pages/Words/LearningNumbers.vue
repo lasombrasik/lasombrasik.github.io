@@ -68,6 +68,7 @@
                 <input
                     v-model="guessedNumber"
                     type="number"
+                    @keyup.enter="submit('input-check-number')"
                     class="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Enter the Number"
                 />
@@ -77,6 +78,7 @@
                 class="flex justify-center"
             >
                 <button
+                    id="input-check-number"
                     class="w-120 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
                     @click="checkNumber()"
                 >
@@ -158,6 +160,9 @@ export default {
             this.hiddenNumber = true;
             this.correctAnswer = false;
             this.guessedNumber = null;
+        },
+        submit() {
+            document.getElementById('input-check-number').click();
         }
     },
 }
