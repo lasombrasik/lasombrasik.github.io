@@ -8,12 +8,15 @@
                 class="flex justify-center space-x-4 mb-4"
             >
                 <input
+                    id="input-number-from"
                     v-model="numberFrom"
                     class="border w-28 border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     type="number"
                     placeholder="From"
+                    @keyup.enter="submit('input-check-number')"
                 />
                 <input
+                    id="input-number-to"
                     v-model="numberTo"
                     class="border w-28 border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     type="number"
@@ -25,6 +28,7 @@
                 class="flex justify-center"
             >
                 <button
+                    id="button-generate-random-number"
                     class="w-120 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
                     @click="generateRandomNumber"
                 >
@@ -67,6 +71,7 @@
             >
                 <input
                     v-model="guessedNumber"
+                    id="input-guessed-number"
                     type="number"
                     @keyup.enter="submit('input-check-number')"
                     class="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -102,6 +107,7 @@
                 class="flex justify-center mt-4"
             >
                 <button
+                    id="button-next-number"
                     class="w-120 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
                     @click="nextNumber()"
                 >
@@ -132,14 +138,25 @@ export default {
             const max = parseInt(this.numberTo);
             this.randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
             this.speak(this.randomNumber);
+
+            setTimeout(() => {
+                document.getElementById('input-guessed-number').focus();
+            }, 100);
         },
         checkNumber () {
             this.correctAnswer = false;
             if (this.guessedNumber === this.randomNumber) {
                 this.correctAnswer = true;
                 this.hiddenNumber = false;
+
+                setTimeout(() => {
+                    document.getElementById('button-next-number').focus();
+                }, 100);
             } else {
                 this.showFailureResult = true;
+                this.guessedNumber = null;
+
+                document.getElementById('input-guessed-number').focus();
             }
 
             setTimeout(() => {
@@ -160,6 +177,10 @@ export default {
             this.hiddenNumber = true;
             this.correctAnswer = false;
             this.guessedNumber = null;
+
+            setTimeout(() => {
+                document.getElementById('button-generate-random-number').focus();
+            }, 100);
         },
         submit() {
             document.getElementById('input-check-number').click();
