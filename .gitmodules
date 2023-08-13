@@ -1,0 +1,3 @@
+[submodule "lernen"]
+    path = lernen
+    url = https://github.com/lasombrasik/lernen.git
