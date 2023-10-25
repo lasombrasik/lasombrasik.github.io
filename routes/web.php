@@ -21,11 +21,15 @@ use Inertia\Inertia;
 */
 
 Route::get('/', function () {
-    return Inertia::render('Words/Index', [
-        'words' => GermanWord::with('user:id,name')
+    $words = Auth::check()
+        ? GermanWord::with('user:id,name')
             ->where('user_id', Auth::user()->id)
             ->latest()
-            ->get(),
+            ->get()
+        : [];
+
+    return Inertia::render('Words/Index', [
+        'words' => $words,
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
