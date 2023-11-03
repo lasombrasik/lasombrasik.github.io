@@ -76,7 +76,7 @@ const submit = () => {
                 </label>
             </div>
 
-            <div class="flex items-center justify-end mt-4">
+            <div class="flex items-center justify-center mt-4">
                 <Link
                     v-if="canResetPassword"
                     :href="route('password.request')"
@@ -86,8 +86,18 @@ const submit = () => {
                 </Link>
 
                 <PrimaryButton class="ml-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Log in
+                    {{ 'Log in' }}
                 </PrimaryButton>
+            </div>
+
+            <div class="flex items-center justify-center mt-4">
+                <span>{{ 'Have no account?' }}</span>
+                <Link
+                    :href="route('register')"
+                    class="inline-flex ml-2 left font-semibold rounded text-sm text-blue-600 hover:text-blue-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                    {{ 'Register' }}
+                </Link>
             </div>
         </form>
     </GuestLayout>
