@@ -2,106 +2,186 @@
     <Head title="Added Words" />
 
     <AuthenticatedLayout>
-        <div class=" text-black-600 font-semibold sm:text-lg text-center">
-            <span>{{ 'Number Of Added Words: ' }} {{ words.length }}</span>
-        </div>
-        <div class="flex justify-center items-center">
-            <div class="w-1/4 max-w-screen-md">
-                <h2 class="font-bold text-white text-center bg-gray-600 sm:text-3xl">{{ 'Word:' }}</h2>
-                <ul>
-                    <li
-                        v-for="(item, index) in words" :key="item.id"
-                        :class="index % 2 === 0 ? 'bg-gray-200' : false"
-                        class="text-black-600 sm:text-3xl text-center"
-                    >
-                        {{ item.article ? item.article + ' ' + item.word : item.word }}
-                    </li>
-                </ul>
+        <div class="h-1/4 mx-auto sm:w-1/2 relative">
+            <span v-text="words['word']"></span>
+            <div class=" text-black-600 font-semibold sm:text-lg text-center">
+                <span>{{ 'Total words:' }} {{ words.length }}</span>
             </div>
-            <div class="w-1/4 max-w-screen-md">
-                <h2 class="font-bold text-white text-center bg-gray-600 sm:text-3xl">{{ 'Translation:' }}</h2>
-                <ul>
-                    <li
-                        v-for="(item, index) in words" :key="item.id"
-                        :class="index % 2 === 0 ? 'bg-gray-200' : false"
-                        class="text-black-600 sm:text-3xl text-center"
-                    >
-                        {{ item.translation }}
-                    </li>
-                </ul>
-            </div>
-            <div class="w-auto max-w-screen-md">
-                <h2 class="font-bold text-white text-center bg-gray-600 sm:text-3xl">
-                    {{ 'Action:' }}
-                </h2>
-                <ul>
-                    <li
-                        v-for="(item, index) in words" :key="item.id"
-                        :class="index % 2 === 0 ? 'bg-gray-200' : false"
-                        class="text-black-600 sm:text-3xl"
-                    >
-                        <button
-                            v-if="done"
-                            id="show-modal"
-                            class="px-4 text-left text-sm bg-gray-300 leading-5 text-black-700 hover:bg-blue-400 transition duration-150 ease-in-out mr-1"
-                            @click="openModal(item); editing = true"
-                        >
-                            {{ 'Edit' }}
-                        </button>
-                        <button
-                            @click="destroy(item.id)"
-                            class="px-4 text-left text-sm bg-gray-300 leading-5 text-black-700 hover:bg-red-400 transition duration-150 ease-in-out"
-                        >
-                            {{ 'Delete' }}
-                        </button>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <div class="modal" v-if="editing">
-            <div class="modal-content">
-                <h1 class="text-center">Change Word Settings</h1>
-                <form @submit.prevent="form.put(route('words.update', selectedItemId), { onSuccess: () => editing = false })">
-                    <input type="text" v-model="selectedItemName" class="text-center mt-4 w-full text-gray-900 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm" v-if="selectedItemName !== undefined" />
-                    <input type="text" v-model="selectedItemTranslation" class="text-center mt-4 w-full text-gray-900 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm" v-if="selectedItemTranslation !== undefined" />
+            <EasyDataTable
+                buttons-pagination
+                :headers="headers"
+                :items="words"
+                show-index
+            >
+                <template #item-created_at="item">
+                    {{ formattedDate(item.created_at) }}
+                </template>
 
-                    <div class="flex justify-between">
-                        <button class="mt-4 text-left bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-blue-600" @click="editing = false; form.reset(); form.clearErrors()">Cancel</button>
-                        <button class="mt-4 text-right bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-green-600" type="submit" @click="editing = false; form.reset(); form.clearErrors();">Save</button>
+                <template #item-operation="item">
+                    <div class="operation-wrapper">
+                        <button
+                            class="bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600 mr-3"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalEdit"
+                            @click="openModal(item)"
+                        >
+                            <span>{{ 'Edit' }}</span>
+                        </button>
+
+                        <div
+                            class="modal fade"
+                            id="modalEdit"
+                            tabindex="-1"
+                            aria-labelledby="exampleModalLabel"
+                            aria-hidden="true"
+                        >
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5
+                                            class="modal-title"
+                                            id="exampleModalLabel"
+                                        >{{ 'Word Editing' }}</h5>
+                                        <button
+                                            type="button"
+                                            class="btn-close"
+                                            data-bs-dismiss="modal"
+                                            aria-label="Close"
+                                        ></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form>
+                                            <div class="mb-3">
+                                                <label
+                                                    for="article"
+                                                    class="form-label"
+                                                >{{ 'Article' }}</label>
+                                                <input
+                                                    v-model="selectedItemArticle"
+                                                    @input="validateArticle(false)"
+                                                    type="text"
+                                                    class="form-control"
+                                                    id="article"
+                                                    maxlength="3"
+                                                >
+                                                <span
+                                                    v-if="articleError"
+                                                    class="text-danger"
+                                                >{{ articleError }}</span>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label
+                                                    for="word"
+                                                    class="form-label"
+                                                >{{ 'Word' }}</label>
+                                                <input
+                                                    v-model="selectedItemWord"
+                                                    @input="validateWord"
+                                                    type="text"
+                                                    class="form-control"
+                                                    id="word"
+                                                >
+                                                <span
+                                                    v-if="wordError"
+                                                    class="text-danger"
+                                                >{{ wordError }}</span>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label
+                                                    for="translation"
+                                                    class="form-label"
+                                                >{{ 'Translation' }}</label>
+                                                <input
+                                                    v-model="selectedItemTranslation"
+                                                    @input="validateTranslation"
+                                                    type="text"
+                                                    class="form-control"
+                                                    id="translation"
+                                                >
+                                                <span
+                                                    v-if="translationError"
+                                                    class="text-danger"
+                                                >{{ translationError }}</span>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button
+                                            type="button"
+                                            class="btn btn-secondary"
+                                            data-bs-dismiss="modal"
+                                        >{{ 'Close' }}</button>
+                                        <button
+                                            @click="actionEdit(item)"
+                                            type="button"
+                                            class="btn btn-primary"
+                                        >{{ 'Save' }}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button
+                            class="bg-red-600 text-white px-2 py-1 rounded-md hover:bg-red-700"
+                            @click="actionDelete(item.id)"
+                        >
+                            <span>{{ 'Delete' }}</span>
+                        </button>
                     </div>
-                </form>Action
-            </div>
+                </template>
+            </EasyDataTable>
         </div>
     </AuthenticatedLayout>
 </template>
 
-<script setup>
-
-import { ref } from 'vue';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import {Head, useForm} from '@inertiajs/vue3';
-
-defineProps(['words']);
-const editing = ref(false);
-
-const form = useForm({
-    selectedItemName: '',
-    selectedItemTranslation: '',
-});
-</script>
-
 <script>
+import EasyDataTable from 'vue3-easy-data-table';
+import 'vue3-easy-data-table/dist/style.css';
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.min.js';
+
+
 export default {
-    name: "AddedWords",
+    name: 'AddedWords',
+    props: {
+        words: Array,
+    },
+    components:{
+        AuthenticatedLayout,
+        EasyDataTable
+    },
     data() {
         return {
-            selectedItemId: false,
-            done: false
+            headers: [
+                { text: "Article", value: "article", width: 30 },
+                { text: "Word", value: "word", sortable: true },
+                { text: "Translation", value: "translation", sortable: true },
+                { text: "Created", value: "created_at", sortable: true },
+                { text: "Operation", value: "operation" }
+            ],
+            items: [],
+            editing: false,
+            selectedItemId: '',
+            selectedItemWord: '',
+            selectedItemArticle: '',
+            selectedItemTranslation: '',
+            articleError: null,
+            wordError: null,
+            translationError: null,
+
         }
     },
     methods: {
-        async destroy(itemId) {
-            await axios.delete(`/words/${itemId}`)
+        formattedDate(date) {
+            const dateObject = new Date(date);
+            const year = dateObject.getFullYear();
+            const month = (dateObject.getMonth() + 1).toString().padStart(2, '0');
+            const day = dateObject.getDate().toString().padStart(2, '0');
+
+            return `${day}.${month}.${year}`;
+        },
+        async actionDelete(id) {
+            await axios.delete(`/words/${id}`)
                 .then(response => {
                     window.location.reload()
                     console.log('The entry was successfully deleted.');
@@ -113,29 +193,65 @@ export default {
         openModal(item) {
             if (item && item.word) {
                 this.selectedItemId = item.id;
-                this.selectedItemName = item.word;
+                this.selectedItemArticle = item.article ? item.article.charAt(0).toUpperCase() + item.article.slice(1) : '';
+                this.selectedItemWord = item.word;
                 this.selectedItemTranslation = item.translation;
             }
-        }
-    }
+        },
+        async actionEdit(item) {
+            this.validateArticle(true);
+            this.validateWord();
+            this.validateTranslation();
+
+            if (!this.articleError && !this.wordError && !this.translationError) {
+                await axios.put(`/words/${item.id}`, {
+                    edit: true,
+                    article: this.selectedItemArticle,
+                    word: this.selectedItemWord,
+                    translation: this.selectedItemTranslation
+                })
+                    .then(response => {
+                        window.location.reload()
+                        console.log('The entry was successfully edited.');
+                    })
+                    .catch(error => {
+                        console.error('Error while editing record', error);
+                    });
+            }
+        },
+        capitalizeFirstLetter() {
+            let value = this.selectedItemArticle;
+            if (value.length > 0) {
+                this.selectedItemArticle = value.charAt(0).toUpperCase() + value.slice(1);
+            }
+        },
+        validateArticle(edit = false) {
+            this.capitalizeFirstLetter();
+
+            if (this.selectedItemArticle.length === 3 || (edit && this.selectedItemArticle.length !== 0)) {
+                if (!/^(Der|Die|Das)$/i.test(this.selectedItemArticle)) {
+                    this.articleError = 'Invalid Article format. Valid values are Der, Die, Das.';
+                } else {
+                    this.articleError = null;
+                }
+            } else {
+                this.articleError = null;
+            }
+        },
+        validateTranslation() {
+            if (this.selectedItemTranslation.length === 0) {
+                this.translationError = 'This field must not be empty.';
+            } else {
+                this.translationError = null;
+            }
+        },
+        validateWord() {
+            if (this.selectedItemWord.length === 0) {
+                this.wordError = 'This field must not be empty.';
+            } else {
+                this.wordError = null;
+            }
+        },
+    },
 }
 </script>
-
-<style scoped>
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.modal-content {
-    background-color: white;
-    padding: 20px;
-}
-</style>

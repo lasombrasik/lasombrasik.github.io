@@ -86,18 +86,14 @@ class WordController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, GermanWord $word): RedirectResponse
+    public function update(Request $request, GermanWord $word): Response
     {
         $this->authorize('update', $word);
 
         $validated = $request->validate(
             [
-                'article' => 'nullable|string|max:3',
-                'word' => [
-                    'required',
-                    'string',
-                    'max:255'
-                ],
+                'article' => 'nullable|string|max:3|in:Der,Die,Das',
+                'word' => 'required|string|max:255',
                 'translation' => 'required|string|max:255',
             ],
             [
@@ -110,7 +106,11 @@ class WordController extends Controller
 
         $word->update($validated);
 
-        return redirect(route('words.index'));
+        if ($request->get('edit')) {
+            return Inertia::render('Words/AddedWords');
+        }
+
+        return Inertia::render('Words/Index');
     }
 
     /**
