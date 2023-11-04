@@ -1,6 +1,4 @@
 <template>
-    <Head title="Added Words" />
-
     <AuthenticatedLayout>
         <div class="h-1/4 mx-auto sm:w-1/2 relative">
             <span v-text="words['word']"></span>

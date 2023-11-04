@@ -48,6 +48,8 @@ Route::resource('words', WordController::class)
     ->only(['index', 'create', 'store', 'update', 'destroy'])
     ->middleware(['auth', 'verified']);
 
+Route::delete('/words/{id}', 'WordController@destroy');
+
 Route::get('words/added-words', [WordController::class, 'allAddedWords']
     )->name('words.all')
     ->middleware(['auth', 'verified']);

@@ -55,13 +55,12 @@
                         >
                             {{ 'Edit' }}
                         </button>
-                        <DropdownLink
-                            as="button"
-                            :href="route('words.destroy', word.id)"
-                            method="delete"
+                        <button
+                            class="block w-full px-4 py-2 text-left text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 transition duration-150 ease-in-out"
+                            @click="deleteAction(word.id)"
                         >
                             {{ 'Delete' }}
-                        </DropdownLink>
+                        </button>
                     </template>
                 </Dropdown>
             </div>
@@ -215,6 +214,16 @@ export default {
             this.form.error.article = null;
             this.form.error.word = null;
             this.form.error.translation = null;
+        },
+        async deleteAction(id) {
+            try {
+                await axios.delete(`/words/${id}`);
+                console.log('The entry was successfully deleted.');
+                this.editing = false;
+                location.reload();
+            } catch (error) {
+                console.error('Error while deleting record', error);
+            }
         }
     }
 }
