@@ -174,7 +174,7 @@ export default {
                 this.addedSuccessfully = response.data.message;
                 setTimeout(() => {
                     this.addedSuccessfully = null;
-                }, 500);
+                }, 2000);
 
                 location.reload();
             } catch (error) {
@@ -188,7 +188,7 @@ export default {
                         this.articleError = null;
                         this.wordError = null;
                         this.translationError = null;
-                    }, 1000);
+                    }, 2000);
 
                     if (this.wordError === 'This word has already been added') {
                         this.article = null;
