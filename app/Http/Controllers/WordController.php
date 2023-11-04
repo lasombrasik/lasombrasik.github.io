@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -39,32 +40,36 @@ class WordController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): \Illuminate\Http\JsonResponse
     {
-        $validated = $request->validate(
-            [
+        try {
+            $validated = $request->validate([
                 'article' => 'nullable|string|max:3|in:Der,Die,Das',
                 'word' => [
                     'required',
                     'string',
                     'max:255',
-                    Rule::unique('german_words')->where(function ($query) use ($request) {
-                        return $query->where('user_id', $request->user()->id);
-                    })
+                    Rule::unique('german_words')
+                        ->where(function ($query) use ($request) {
+                            return $query->where('user_id', $request->user()->id);
+                    }),
                 ],
                 'translation' => 'required|string|max:255',
             ],
-            [
-                'article.max' => 'The :attribute field is required.',
-                'word.required' => 'The :attribute field is required.',
-                'word.string' => 'The :attribute field is string.',
-                'word.max' => 'The :attribute field max 255.',
-                'word.unique' => 'This word has already been added'
-            ]);
+                [
+                    'word.unique' => 'This :attribute has already been added',
+                    'article.max' => 'The :attribute field is required.',
+                    'word.required' => 'The :attribute field is required.',
+                    'word.string' => 'The :attribute field is string.',
+                    'word.max' => 'The :attribute field max 255.'
 
-        $request->user()->words()->create($validated);
+                ]);
+            $request->user()->words()->create($validated);
 
-        return redirect(route('words.index'));
+            return response()->json(['message' => 'Word added successfully']);
+        } catch (ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
+        }
     }
 
     /**

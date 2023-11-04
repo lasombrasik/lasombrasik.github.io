@@ -1,16 +1,10 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import {Head, useForm} from '@inertiajs/vue3';
+import {Head} from '@inertiajs/vue3';
 import AddWord from '@/Pages/Words/AddWord.vue';
 
 defineProps(['words']);
-
-const form = useForm({
-    article: '',
-    word: '',
-    translation: '',
-});
 </script>
 
 <template>
@@ -18,12 +12,12 @@ const form = useForm({
 
     <AuthenticatedLayout>
         <div class="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
-            <form @submit.prevent="form.post(route('words.store'), { onSuccess: () => form.reset() })">
+            <div>
                 <div class="flex flex-row">
                     <input
                         id="article-input"
                         type="text"
-                        v-model="form.article"
+                        v-model="article"
                         @input="checkInputArticle()"
                         placeholder="Article"
                         maxlength="3"
@@ -32,7 +26,7 @@ const form = useForm({
                     <input
                         id="word-input"
                         type="text"
-                        v-model="form.word"
+                        v-model="word"
                         @input="checkInputWord()"
                         @keyup.enter="keyupEnterWord()"
                         placeholder="Word"
@@ -42,17 +36,22 @@ const form = useForm({
                 <input
                     id="translation-input"
                     type="text"
-                    v-model="form.translation"
+                    v-model="translation"
                     @input="checkInputTranslation()"
                     @keyup.enter="keyupEnterTranslation()"
                     placeholder="Translation"
-                    lang="ru"
                     class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
                 />
                 <span class="text-red-600">
                     <span v-if="articleError">{{ articleError }}<br></span>
                     <span v-if="wordError">{{ wordError }}<br></span>
                     <span v-if="translationError">{{ translationError }}</span>
+                </span>
+                <span
+                    v-if="addedSuccessfully"
+                    class="text-green-600"
+                >
+                    {{ addedSuccessfully }}
                 </span>
                 <div class="text-center">
                     <PrimaryButton
@@ -71,7 +70,7 @@ const form = useForm({
                         {{ 'Add Word' }}
                     </button>
                 </div>
-            </form>
+            </div>
             <div class="mt-6 bg-white shadow-sm rounded-lg divide-y">
                 <AddWord
                     v-for="word in words.slice(0, 3)"
@@ -88,32 +87,34 @@ export default {
     name: "Index",
     data() {
         return {
+            article: null,
+            word: null,
+            translation: null,
             articleError: null,
             wordError: null,
             translationError: null,
             isFormWordValid: false,
-            isFormTranslationValid: false
+            isFormTranslationValid: false,
+            addedSuccessfully: null
         }
     },
     methods: {
          checkInputArticle(save = false) {
-            let input = document.getElementById("article-input");
-            let value = input.value;
-
-            if (value.length > 0) {
-                input.value = value.charAt(0).toUpperCase() + value.slice(1);
-            }
+             if (this.article.length > 0) {
+                 this.article = this.article.toLowerCase();
+                 this.article = this.article.charAt(0).toUpperCase() + this.article.slice(1);
+             }
 
             if (save) {
-                if (input.value.length !== 0 &&
-                    input.value !== 'Der' &&
-                    input.value !== 'Die' &&
-                    input.value !== 'Das') {
+                if (this.article.length !== 0 &&
+                    this.article !== 'Der' &&
+                    this.article !== 'Die' &&
+                    this.article !== 'Das') {
                     this.articleError = 'Article must be "Der", "Die", or "Das", or empty..';
                 }
             } else {
-                if (input.value.length === 3 &&
-                    (input.value === 'Der' || input.value === 'Die' || input.value === 'Das')) {
+                if (this.article.length === 3 &&
+                    (this.article === 'Der' || this.article === 'Die' || this.article === 'Das')) {
                     let nextInput = document.getElementById("word-input");
 
                     if (nextInput) {
@@ -123,7 +124,10 @@ export default {
                     this.articleError = null;
                 }
 
-                if (input.value.length === 3 && input.value !== 'Der' && input.value !== 'Die' && input.value !== 'Das') {
+                if (this.article.length === 3 &&
+                    this.article !== 'Der' &&
+                    this.article !== 'Die' &&
+                    this.article !== 'Das') {
                     this.articleError = 'Article must be "Der", "Die", or "Das", or empty.';
                 }
             }
@@ -132,10 +136,7 @@ export default {
             document.getElementById("translation-input").focus();
         },
         checkInputWord() {
-            let input = document.getElementById("word-input");
-            let value = input.value;
-
-            if (value.length === 0) {
+            if (this.word.length === 0) {
                 this.isFormWordValid = false;
                 this.wordError = 'Field Word must not be empty.';
             } else {
@@ -147,10 +148,7 @@ export default {
             document.getElementById("submit-button").focus();
         },
         checkInputTranslation() {
-            let input = document.getElementById("translation-input");
-            let value = input.value;
-
-            if (value.length === 0) {
+            if (this.translation.length === 0) {
                 this.isFormTranslationValid = false;
                 this.translationError = 'Field Translation must not be empty.';
             } else {
@@ -160,7 +158,46 @@ export default {
         },
         saveForm() {
              this.checkInputArticle(true);
-        }
+             this.submitForm();
+        },
+        async submitForm() {
+            try {
+                const response = await axios.post(route('words.store'), {
+                    article: this.article,
+                    word: this.word,
+                    translation: this.translation
+                });
+
+                this.articleError = '';
+                this.wordError = '';
+                this.translationError = '';
+                this.addedSuccessfully = response.data.message;
+                setTimeout(() => {
+                    this.addedSuccessfully = null;
+                }, 500);
+
+                location.reload();
+            } catch (error) {
+                if (error.response && error.response.status === 422) {
+                    const errors = error.response.data.errors;
+                    this.articleError = errors.article && errors.article[0] ? errors.article[0] : null;
+                    this.wordError = errors.word && errors.word[0] ? errors.word[0] : null;
+                    this.translationError = errors.translation && errors.translation[0] ? errors.translation[0] : null;
+
+                    setTimeout(() => {
+                        this.articleError = null;
+                        this.wordError = null;
+                        this.translationError = null;
+                    }, 1000);
+
+                    if (this.wordError === 'This word has already been added') {
+                        this.article = null;
+                        this.word = null;
+                        this.translation = null;
+                    }
+                }
+            }
+        },
     }
 }
 </script>
