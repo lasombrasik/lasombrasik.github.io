@@ -41,7 +41,9 @@
                                         <h5
                                             class="modal-title"
                                             id="exampleModalLabel"
-                                        >{{ 'Word Editing' }}</h5>
+                                        >
+                                            {{ 'Word Editing' }}
+                                        </h5>
                                         <button
                                             type="button"
                                             class="btn-close"
@@ -67,7 +69,9 @@
                                                 <span
                                                     v-if="articleError"
                                                     class="text-danger"
-                                                >{{ articleError }}</span>
+                                                >
+                                                    {{ articleError }}
+                                                </span>
                                             </div>
                                             <div class="mb-3">
                                                 <label
@@ -84,7 +88,9 @@
                                                 <span
                                                     v-if="wordError"
                                                     class="text-danger"
-                                                >{{ wordError }}</span>
+                                                >
+                                                    {{ wordError }}
+                                                </span>
                                             </div>
                                             <div class="mb-3">
                                                 <label
@@ -101,7 +107,9 @@
                                                 <span
                                                     v-if="translationError"
                                                     class="text-danger"
-                                                >{{ translationError }}</span>
+                                                >
+                                                    {{ translationError }}
+                                                </span>
                                             </div>
                                         </form>
                                     </div>
@@ -168,7 +176,6 @@ export default {
             articleError: null,
             wordError: null,
             translationError: null,
-
         }
     },
     methods: {

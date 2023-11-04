@@ -1,6 +1,5 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import InputError from '@/Components/InputError.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import {Head, useForm} from '@inertiajs/vue3';
 import AddWord from '@/Pages/Words/AddWord.vue';
@@ -34,7 +33,8 @@ const form = useForm({
                         id="word-input"
                         type="text"
                         v-model="form.word"
-                        @keyup.enter="checkInputWord()"
+                        @input="checkInputWord()"
+                        @keyup.enter="keyupEnterWord()"
                         placeholder="Word"
                         class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
                     />
@@ -43,21 +43,32 @@ const form = useForm({
                     id="translation-input"
                     type="text"
                     v-model="form.translation"
-                    @keyup.enter="checkInputTranslation()"
+                    @input="checkInputTranslation()"
+                    @keyup.enter="keyupEnterTranslation()"
                     placeholder="Translation"
                     class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
                 />
-                <InputError
-                    :message="form.errors.word"
-                    class="mt-2"
-                />
+                <span class="text-red-600">
+                    <span v-if="articleError">{{ articleError }}<br></span>
+                    <span v-if="wordError">{{ wordError }}<br></span>
+                    <span v-if="translationError">{{ translationError }}</span>
+                </span>
                 <div class="text-center">
                     <PrimaryButton
+                        v-if="isFormWordValid && isFormTranslationValid"
                         id="submit-button"
                         class="mt-4"
+                        @click="saveForm"
                     >
                         {{ 'Add Word' }}
                     </PrimaryButton>
+                    <button
+                        v-else
+                        disabled
+                        class="inline-flex items-center mt-4 px-4 py-2 bg-gray-400 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest transition ease-in-out duration-150"
+                    >
+                        {{ 'Add Word' }}
+                    </button>
                 </div>
             </form>
             <div class="mt-6 bg-white shadow-sm rounded-lg divide-y">
@@ -74,8 +85,17 @@ const form = useForm({
 <script>
 export default {
     name: "Index",
+    data() {
+        return {
+            articleError: null,
+            wordError: null,
+            translationError: null,
+            isFormWordValid: false,
+            isFormTranslationValid: false
+        }
+    },
     methods: {
-         checkInputArticle() {
+         checkInputArticle(save = false) {
             let input = document.getElementById("article-input");
             let value = input.value;
 
@@ -83,19 +103,62 @@ export default {
                 input.value = value.charAt(0).toUpperCase() + value.slice(1);
             }
 
-            if (input.value.length === 3) {
-                let nextInput = document.getElementById("word-input");
+            if (save) {
+                if (input.value.length !== 0 &&
+                    input.value !== 'Der' &&
+                    input.value !== 'Die' &&
+                    input.value !== 'Das') {
+                    this.articleError = 'Article must be "Der", "Die", or "Das", or empty..';
+                }
+            } else {
+                if (input.value.length === 3 &&
+                    (input.value === 'Der' || input.value === 'Die' || input.value === 'Das')) {
+                    let nextInput = document.getElementById("word-input");
 
-                if (nextInput) {
-                    nextInput.focus();
+                    if (nextInput) {
+                        nextInput.focus();
+                    }
+                } else {
+                    this.articleError = null;
+                }
+
+                if (input.value.length === 3 && input.value !== 'Der' && input.value !== 'Die' && input.value !== 'Das') {
+                    this.articleError = 'Article must be "Der", "Die", or "Das", or empty.';
                 }
             }
         },
-        checkInputWord() {
+        keyupEnterWord() {
             document.getElementById("translation-input").focus();
         },
-        checkInputTranslation() {
+        checkInputWord() {
+            let input = document.getElementById("word-input");
+            let value = input.value;
+
+            if (value.length === 0) {
+                this.isFormWordValid = false;
+                this.wordError = 'Field Word must not be empty.';
+            } else {
+                this.isFormWordValid = true;
+                this.wordError = null;
+            }
+        },
+        keyupEnterTranslation() {
             document.getElementById("submit-button").focus();
+        },
+        checkInputTranslation() {
+            let input = document.getElementById("translation-input");
+            let value = input.value;
+
+            if (value.length === 0) {
+                this.isFormTranslationValid = false;
+                this.translationError = 'Field Translation must not be empty.';
+            } else {
+                this.isFormTranslationValid = true;
+                this.translationError = null;
+            }
+        },
+        saveForm() {
+             this.checkInputArticle(true);
         }
     }
 }

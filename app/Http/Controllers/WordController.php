@@ -43,7 +43,7 @@ class WordController extends Controller
     {
         $validated = $request->validate(
             [
-                'article' => 'nullable|string|max:3',
+                'article' => 'nullable|string|max:3|in:Der,Die,Das',
                 'word' => [
                     'required',
                     'string',
