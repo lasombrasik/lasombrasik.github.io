@@ -46,6 +46,7 @@ const form = useForm({
                     @input="checkInputTranslation()"
                     @keyup.enter="keyupEnterTranslation()"
                     placeholder="Translation"
+                    lang="ru"
                     class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
                 />
                 <span class="text-red-600">
